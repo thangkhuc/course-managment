@@ -35,25 +35,18 @@ void eintragen(){
 
 void studentLoeschen(){
     Student* p = findStudent();
-    Student* _p = top;
 
-    while(true){
-        if (p != top) {
-            while (_p->getNaechsteStudent() != p) // suche den Student am vorne
-                _p = _p->getNaechsteStudent();
+    if (p != top) {
+        Student* p_Vorne= top;
 
-            p->setVorname(_p->getVorname());   // mit dem Wert des vornen Studenten ersetzen
-            p->setNachname(_p->getNachname()); // aber die Adresse bleibt unveraendert
-            p->setMartikelnummer(_p->getMartikelnummer());
+        while (p_Vorne->getNaechsteStudent() != p) // suche den Student am vorne
+            p_Vorne = p_Vorne->getNaechsteStudent();
 
-            p = _p;
-            _p = top;
-        }
-        else {
-            top = p->getNaechsteStudent();
-            break;
-        }
+        p_Vorne->setNaechsteStudent(p->getNaechsteStudent());
     }
+    else
+        top = p->getNaechsteStudent();
+    delete p;
 }
 
 void Student :: printStudent(){
