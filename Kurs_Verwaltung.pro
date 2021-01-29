@@ -5,11 +5,11 @@ CONFIG -= qt
 
 SOURCES += \
         Kurs.cpp \
-        Menue.cpp \
         Student.cpp \
+        kursverwaltung.cpp \
         main.cpp
 
 HEADERS += \
     Kurs.h \
-    Menue.h \
     Student.h \
+    kursverwaltung.h

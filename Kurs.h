@@ -3,20 +3,20 @@
 #include "Student.h"
 #include "vector"
 
-
-class Kurs{
-public:
-    Kurs();
-    ~Kurs();
-
+class Kurs
+{
+private:
     string kursName;
     vector<Student*> teilnehmer;
+public:
+    Kurs();
+    Kurs(string);
 
     void anlegen();
-    void printKurs();
+    void printKurs() const;
     void addStudent(Student& student);
+
+    string getKursname() const;
 };
 
-extern vector<Kurs*> kursArray;
-Kurs* kursSuchen();
 #endif // KURS_H

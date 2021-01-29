@@ -1,0 +1,4 @@
+#ifndef KURS_VERWALTUNG_H
+#define KURS_VERWALTUNG_H
+
+#endif // KURS_VERWALTUNG_H

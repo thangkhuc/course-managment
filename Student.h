@@ -7,32 +7,34 @@ using namespace std;
 
 class Student{
 public:
-
     Student();
     Student(Student& student);
-    ~Student();
+    Student(string, string);
 
-    void martikelnummerGenerator();
+    friend class Kursverwaltung;
+
+    void printStudent() const;
+    void eintragen();
+    void remove();
+
     void setMartikelnummer(int martikelnummer);
     void setVorname(string _vorname);
     void setNachname(string _nachname);
     void setNaechsteStudent(Student* _student);
-    int getMartikelnummer();
-    string getVorname();
-    string getNachname();
-    Student* getNaechsteStudent();
-    void printStudent();
+    string   getVorname() const;
+    string   getNachname() const;
+    Student* getNaechsteStudent() const;
+    Student* getTop() const;
+    int      getMartikelnummer() const;
 
 private:
     string vorname;
     string nachname;
     int martikelnummer;
     Student* naechsteStudent;
+    static int martikelnummerArray;
+    static Student* top;
 };
 
-Student* findStudent();
-void studentLoeschen();
-void eintragen();
 int typUmwandlung(string _martikelnummer);
-void testausgeben(Student student);
 #endif // STUDENT_H

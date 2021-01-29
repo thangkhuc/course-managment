@@ -1,10 +1,21 @@
 #include "Student.h"
 
-extern Student* top;
+Student* Student :: top = NULL;
+int Student :: martikelnummerArray = 100000;
 
 Student::Student(){
     vorname = "";
     nachname = "";
+    martikelnummer = martikelnummerArray;
+    martikelnummerArray++;
+}
+
+Student :: Student(string vorname, string nachname) : vorname(vorname), nachname(nachname)
+{
+    martikelnummer = martikelnummerArray;
+    martikelnummerArray++;
+    this->setNaechsteStudent(top);
+    top = this;
 }
 
 Student :: Student(Student& student){ //Kopierkonstruktor
@@ -14,56 +25,46 @@ Student :: Student(Student& student){ //Kopierkonstruktor
     martikelnummer = student.getMartikelnummer();
 }
 
-void eintragen(){
-    Student* p_student = new Student;
+void Student :: eintragen()
+{
+    string vorname, nachname;
 
-    string _vorname, _nachname;
-    cout << "Geben Sie Ihre Vorname ein" << endl;
+    cout << "Geben Sie Ihre Nachname ein: " << endl;
     fflush(stdin);
-    getline(cin, _vorname);
-    cout << "Geben Sie Ihre Nachname ein" << endl;
-    fflush(stdin);
-    getline(cin, _nachname);
+    getline(cin, nachname);
+    this->setNachname(nachname);
 
-    p_student->setVorname(_vorname);
-    p_student->setNachname(_nachname);
-    p_student->martikelnummerGenerator();
-    p_student->setNaechsteStudent(top);
-    top = p_student;
-    p_student->printStudent();
+    cout << "Geben Sie Ihre Vorname ein: " << endl;
+    fflush(stdin);
+    getline(cin, vorname);
+    this->setVorname(vorname);
+
+    this->setNaechsteStudent(top);
+    top = this;
+    this->printStudent();
 }
 
-void studentLoeschen(){
-    Student* p = findStudent();
-
-    if (p != top) {
+void Student :: remove()
+{
+    if (this != top) {
         Student* p_Vorne= top;
 
-        while (p_Vorne->getNaechsteStudent() != p) // suche den Student am vorne
+        while (p_Vorne->getNaechsteStudent() != this) // suche den Student am vorne
             p_Vorne = p_Vorne->getNaechsteStudent();
 
-        p_Vorne->setNaechsteStudent(p->getNaechsteStudent());
+        p_Vorne->setNaechsteStudent(this->getNaechsteStudent());
     }
     else
-        top = p->getNaechsteStudent();
-    delete p;
+        top = this->getNaechsteStudent();
+
+    cout << "Student " << vorname << " " << nachname << " wird geloescht!" << endl;
+    delete this;
 }
 
-void Student :: printStudent(){
+void Student :: printStudent() const
+{
     cout << "Name: " << vorname << " " << nachname << endl;
     cout << "Martikelnummer: " << martikelnummer << endl;
-}
-
-void testausgeben(Student student){
-    Student* p = &student;
-    while (true){
-        cout << "Name: " << p->getVorname() << " " << p->getNachname() << endl;
-        cout << "Martikelnummer: " << p->getMartikelnummer() << endl;
-
-        if (p->getNaechsteStudent() == NULL)
-            break;
-        p = p->getNaechsteStudent();
-    }
 }
 
 int typUmwandlung(string _martikelnummer){
@@ -79,65 +80,20 @@ int typUmwandlung(string _martikelnummer){
     return betrag;
 }
 
-Student* findStudent(){ //return NULL wenn es solchen Student nicht gibt
-    string _martikelnummer;
-    int betrag;
+int Student ::getMartikelnummer() const {return martikelnummer;}
 
-    cout << "Geben Sie die Martikelnummer ein: " << endl;
-    fflush(stdin);
-    getline(cin, _martikelnummer);
+string Student :: getVorname() const {return vorname;}
 
-    betrag = typUmwandlung(_martikelnummer);
+string Student :: getNachname() const {return nachname;}
 
-    Student* p = top;
-    while (true) {
-        if (p == NULL){
-            cout << "es gibt diese Martikelnummer nicht" << endl;
-            return NULL;
-        }
-        if (betrag == p->getMartikelnummer()) {
-            return p;
-            break;
-        }
-        p = p->getNaechsteStudent();
-    }
-}
+Student* Student :: getNaechsteStudent() const {return naechsteStudent;}
 
-int Student ::getMartikelnummer(){
-    return martikelnummer;
-}
+Student* Student :: getTop() const {return top;};
 
-string Student :: getVorname(){
-    return vorname;
-}
+void Student :: setMartikelnummer(int _martikelnummer) {martikelnummer = _martikelnummer;}
 
-string Student :: getNachname(){
-    return nachname;
-}
+void Student :: setVorname(string _vorname) {vorname = _vorname;}
 
-Student* Student :: getNaechsteStudent(){
-    return naechsteStudent;
-}
+void Student :: setNachname(string _nachname) {nachname = _nachname;}
 
-void Student :: setMartikelnummer(int _martikelnummer){
-    martikelnummer = _martikelnummer;
-}
-
-void Student :: setVorname(string _vorname){
-    vorname = _vorname;
-}
-
-void Student :: setNachname(string _nachname){
-    nachname = _nachname;
-}
-
-void Student :: setNaechsteStudent(Student* _student){
-    naechsteStudent = _student;
-}
-
-void Student :: martikelnummerGenerator(){
-    time_t time1 = time(NULL);
-    martikelnummer = (rand() * time1) % (999999 - 100000 + 1) + 100000;
-}
-
-Student :: ~Student(){}
+void Student :: setNaechsteStudent(Student* _student) {naechsteStudent = _student;}
