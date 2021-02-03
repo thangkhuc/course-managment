@@ -16,6 +16,8 @@ public:
     Kurs* findKurs();
     Student* findStudent();
     void printStudent() const;
+    void printKurs() const;
+    void studentSortieren();
 };
 
 #endif // KURSVERWALTUNG_H

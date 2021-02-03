@@ -7,16 +7,20 @@ class Kurs
 {
 private:
     string kursName;
-    vector<Student*> teilnehmer;
+    Student* teilnehmerTop;
+    Student* teilnehmerEnde;
 public:
     Kurs();
     Kurs(string);
 
     void anlegen();
     void printKurs() const;
-    void addStudent(Student& student);
-
+    void addStudent(Student*);
+    void studentSort();
+    void removeStudent(int);
     string getKursname() const;
+
+    friend class Kursverwaltung;
 };
 
 #endif // KURS_H

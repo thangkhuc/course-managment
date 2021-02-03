@@ -4,7 +4,6 @@ vector<Kurs*> Kursverwaltung :: kursArray;
 
 Kursverwaltung :: ~Kursverwaltung()
 {
-
     Student* p_student = nullptr; // delete all the students
     while (p_student->top != NULL) {
         p_student = p_student->top;
@@ -22,7 +21,6 @@ void Kursverwaltung :: menu(){
     cout << "(1) Kurs\n(2) Student\n(3) Testfall\n(4) Verlassen" << endl;
 
     int eingabe;
-
     while(true){
         cin >> eingabe;
         if (eingabe == 1 || eingabe == 2 || eingabe == 3 || eingabe == 4)
@@ -39,7 +37,7 @@ void Kursverwaltung :: menu(){
 
 void Kursverwaltung :: testfall()
 {
-    Student* student1 = new Student("dinh thang", "khuc");
+    Student* student1 = new Student("dinh thang", "Khuc");
     Student* student2 = new Student("Anfang", "Annika");
     Student* student3 = new Student("Informatrix", "Ingo");
     Student* student4 = new Student("Mustermann", "Maximilian");
@@ -47,12 +45,13 @@ void Kursverwaltung :: testfall()
     Student* student6 = new Student("Zausel", "Zacharias");
     Kurs* kurs1 = new Kurs("PAD");
     Kurs* kurs2 = new Kurs("TGI");
-    kurs1->addStudent(*student1);
-    kurs1->addStudent(*student2);
-    kurs1->addStudent(*student5);
-    kurs2->addStudent(*student3);
-    kurs2->addStudent(*student4);
-    kurs2->addStudent(*student6);
+    kurs1->addStudent(student1);
+    kurs1->addStudent(student2);
+    kurs1->addStudent(student5);
+    kurs2->addStudent(student3);
+    kurs2->addStudent(student4);
+    kurs2->addStudent(student6);
+    kurs2->addStudent(student1);
     kursArray.push_back(kurs1);
     kursArray.push_back(kurs2);
 }
@@ -61,12 +60,13 @@ void Kursverwaltung :: kurs(){
     cout << "\t\t--------" << endl;
     cout << "\t\t| KURS |" << endl;
     cout << "\t\t--------" << endl;
-    cout << "(1) Kurs anlegen\n(2) Kurs anzeigen\n(3) Add Student\n(4) Menu" << endl;
+    cout << "(1) Kurs anlegen\n(2) Kurs anzeigen\n(3) Add Student"
+            "\n(4) Alle Kurse anzeigen\n(5) Remove Student\n(6) Menu" << endl;
 
     int eingabe;
     while(true){
         cin >> eingabe;
-        if (eingabe == 1 || eingabe == 2 || eingabe == 3 || eingabe == 4)
+        if (eingabe == 1 || eingabe == 2 || eingabe == 3 || eingabe == 4 || eingabe == 5 || eingabe == 6)
             break;
         cout << "ungueltige Eingabe" << endl;
     }
@@ -90,18 +90,27 @@ void Kursverwaltung :: kurs(){
         }
         case 3:
         {
-            Student* p_student;
-            Kurs* p_kurs = new Kurs;
-
-            p_kurs = findKurs();
-            p_student = findStudent();
+            Kurs* p_kurs = findKurs();
+            Student* p_student = findStudent();
 
             if (p_student != NULL || p_kurs != NULL)
-                p_kurs->addStudent(*p_student);
+                p_kurs->addStudent(p_student);
             kurs();
             break;
         }
-        case 4: {menu(); break;}
+        case 4: {printKurs(); kurs(); break;}
+        case 5:
+        {
+            Kurs* p_kurs = findKurs();
+            Student* p_student = findStudent();
+
+            if (p_kurs != NULL || p_student != NULL)
+                p_kurs->removeStudent(p_student->getMartikelnummer());
+
+            kurs();
+            break;
+        }
+        case 6: {menu(); break;}
     }
 }
 
@@ -129,7 +138,31 @@ void Kursverwaltung :: printStudent() const
         cout << left << p_student->getVorname();
         cout.width(30);
         cout << left << p_student->getMartikelnummer() << endl;
-        p_student = p_student->getNaechsteStudent();
+        p_student = p_student->getNextStudent();
+    }
+}
+
+void Kursverwaltung :: printKurs() const
+{
+    for (unsigned i = 0; i < kursArray.size(); i++ ) {
+        if (kursArray[i]->teilnehmerTop== NULL)
+            cout << "Es gibt keinen Studenten in diesem Kurs." << endl;
+        else{
+            cout.width(28);
+            cout << right <<"Kurs: " << kursArray[i]->kursName << "\n" << endl;
+            cout << right << "Vorname\t\t\t|Nachname\t\t|Matrikelnummer" << endl;
+            cout << "=============================================================" << endl;
+            Student* p = kursArray[i]->teilnehmerTop;
+            while(p != NULL) {
+                cout.width(25);
+                cout << left << p->getVorname() << " ";
+                cout.width(25);
+                cout << left << p->getNachname();
+                cout << p->getMartikelnummer() << endl;
+                p = p->getNextStudent();
+            }
+        }
+        cout << endl;
     }
 }
 
@@ -173,7 +206,7 @@ void Kursverwaltung :: student()
         student();
         break;
     }
-    case 4: {printStudent(); student(); break;}
+    case 4: {studentSortieren(); printStudent(); student(); break;}
     case 5: {menu(); break;}
     }
 }
@@ -216,6 +249,40 @@ Student* Kursverwaltung :: findStudent() //return NULL wenn es solchen Student n
             return p;
             break;
         }
-        p = p->getNaechsteStudent();
+        p = p->getNextStudent();
     }
+}
+
+void Kursverwaltung :: studentSortieren()
+{
+   Student* p = NULL;
+   Student* q = NULL;
+   Student* speicherP = NULL;
+   p = p->top->getNextStudent();
+   q = q->top;
+
+   while (p != NULL) {
+       q = p->getPreviousStudent();
+       speicherP = p->getNextStudent();
+       while (q != NULL && q->getNachname() > p->getNachname()) {
+            if (q != p->top)
+                q->getPreviousStudent()->setNextStudent(p);
+            else
+                p->top = p;
+
+            if (p != p->ende)
+                p->getNextStudent()->setPreviousStudent(q);
+            else
+                p->ende = q;
+
+            p->setPreviousStudent(q->getPreviousStudent());
+            q->setNextStudent(p->getNextStudent());
+
+            p->setNextStudent(q);
+            q->setPreviousStudent(p);
+
+            q = p->getPreviousStudent();
+       }
+       p = speicherP;
+   }
 }
